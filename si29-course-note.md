@@ -2146,46 +2146,70 @@ class Solution:
 
 ```python
 class Solution:
-		# Greedy
+    # greedy
     def jump(self, A: List[int]) -> int:
-        globalMax, localMax = 0, 0
-        #dp[i+1:i+maxJump]
-        step, i = 0, 0
-        while localMax < len(A)-1:
-            #1 find local optimal 
-            while i<= globalMax:
-                localMax = max(i+A[i], localMax)
-                i += 1
-            if localMax == globalMax:
-                return -1
-            # use the local optimal
-            globalMax = localMax
+        if len(A) <= 1: return 0
+        l, r = 0, A[0]
+        step = 1
+        while r < len(A) - 1:
             step += 1
-        
+            nxt = max(i + A[i] for i in range(l, r + 1)) #local max
+            l, r = r+1, nxt
         return step
     # DP    
     def jumpDP(self, A: List[int]) -> int:
-        #dp[i] = minimal number of jumps to reach i
-        #rule1
-        #dp[i+j]=min(dp[i]+1, dp[i+1])
-        #rule2
-        #if you jump to index i2 from i1, while A[i1]+i1 >= A[i2]+i2, it's a wsat
         dp = [float('inf')] * len(A)
-        dp[0] = 0
+        dp[0]=0
         visited = 0
         for i, maxJump in enumerate(A):
-            #rule2
             if i + maxJump <= visited:
-                continue
-            
+                continue 
+                
             for j in range(1, maxJump+1):
                 if i+j < len(dp):
-                    # rule1 
-                    dp[i+j] = min(dp[i]+1, dp[i+j])
+                    # rule1
+                    dp[i+j] = min(dp[i+j], dp[i]+1)
                     visited = i + j
-        
+                    
         return dp[-1]
         
+        '''
+        dp[i] = minimum number of jumps to reach i 
+        
+        #rule 1
+        dp[i+j] = min(dp[i+j], dp[i]+1)
+        
+        j = 1~maxJump
+        i = starting point
+        
+           i
+        A=[2,3,1,1,4]
+        dp=[0, inf, inf, inf, inf]
+        
+        i=0
+        j=2
+        dp=[0, min(inf,0+1) , min(inf, 0+1), inf, inf]
+        dp=[0,1,1, inf, inf]
+        
+        i=1
+        j=3
+        dp=[0,1,min(1, 1+1), min(inf, 1+1), min(inf, 1+1)]
+        dp=[0,1,1,2,2]
+        
+        i=2
+        j=1
+        dp=[0,1,1,2,2]
+        skip
+        #rule2
+        # i1+A[i1] >= i2 + A[i2]
+        
+        i=3
+        j=1
+        dp=[0,1,1,2,min(2, 2+1)]
+        dp=[0,1,1,2,2]
+        
+        return 2
+        '''
 ```
 
 
